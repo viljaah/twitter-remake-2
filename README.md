@@ -61,3 +61,8 @@ after i have read the theory about load balancer, we will go for these features:
 4. Sets up a network for your containers to communicate
 
 after created docker-compose.yaml write in temrinal docker-compose up
+
+after that i got this error: load_balancer-1  | 2025/05/05 13:55:16 [emerg] 1#1: host not found in upstream "cache1:5000" in /etc/nginx/nginx.conf:8
+load_balancer-1  | nginx: [emerg] host not found in upstream "cache1:5000" in /etc/nginx/nginx.conf:8
+
+whcih mean that i now need ot create those caches. 
