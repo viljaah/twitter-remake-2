@@ -66,3 +66,16 @@ after that i got this error: load_balancer-1  | 2025/05/05 13:55:16 [emerg] 1#1:
 load_balancer-1  | nginx: [emerg] host not found in upstream "cache1:5000" in /etc/nginx/nginx.conf:8
 
 whcih mean that i now need ot create those caches. 
+
+## when creaitng the caches:
+The cache folder should be created at the same level as your backend folder, not inside it. Your directory structure should look like this:
+twitter-remake-2/
+├── backend/               # Your existing FastAPI application
+│   └── load-balancer/     # Your nginx configuration
+│       └── nginx.conf
+├── cache/                 # New folder for cache implementation
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── cache_server.py
+└── docker-compose.yml     # Main Docker Compose file
+This structure keeps your cache implementation separate from your backend code, which aligns with the assignment's requirement that "this whole subsystem should be the kind you could choose to add or remove later."
