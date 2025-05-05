@@ -13,6 +13,7 @@ class Tweet(Base):
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
-    # establishes a relationship to the User model
+    # establishes relationships
     user = relationship("User", back_populates="tweets")
     hashtags = relationship("Hashtag", secondary="tweet_hashtags", back_populates="tweets")
+    likes = relationship("Like", back_populates="tweet", lazy="dynamic", cascade="all, delete") #lazy so we can call .count()

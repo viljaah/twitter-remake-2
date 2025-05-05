@@ -1,7 +1,9 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from models.tweet_schema import Tweet
 from models.hashtag_schema import Hashtag
+from models.like_schema import Like
 import re
 
 # create a new tweet
@@ -35,12 +37,37 @@ def create_tweet(db: Session, tweet_data: dict) -> Tweet:
 
 # retrive all tweets
 # route GET /tweets
+# def get_all_tweets(db: Session):
+#     """
+#     :return: list of tweet objects
+#     """
+#     # fetch all records from the tweets table
+#     tweets = db.query(Tweet).all()
+#     return tweets
+
 def get_all_tweets(db: Session):
     """
-    :return: list of tweet objects
+    Return a list of tweets, each as a dict that includes a 'likes' count.
     """
-    # fetch all records from the tweets table
-    tweets = db.query(Tweet).all()
+    # 1. Query each Tweet + its Like‐count
+    rows = (
+        db.query(
+            Tweet,
+            func.count(Like.id).label("likes")
+        )
+        .outerjoin(Like, Like.tweetId == Tweet.id)
+        .group_by(Tweet.id)
+        .all()
+    )
+
+    # 2. Build a JSON‐serializable list of dicts
+    tweets = []
+    for tweet, likes in rows:
+        data = tweet.__dict__.copy()
+        data.pop("_sa_instance_state", None)
+        data["likes"] = likes
+        tweets.append(data)
+
     return tweets
 
 # search for tweets that have the query string in their content
@@ -111,3 +138,31 @@ def delete_tweet(db: Session, tweet_id: int) -> bool:
     db.delete(tweet)
     db.commit()
     return {"message": "Tweet deleted successfully"}
+
+# add like and count the likes for a tweet
+# route POST /tweets/{tweet_id}/like
+def like_tweet(db: Session, tweet_id: int):
+    """
+    insert a new Like row for tweet_id, then return the total count
+    """
+    #check that the tweet exists
+    tweet = db.query(Tweet).filter(Tweet.id == tweet_id).first()
+    if tweet is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Tweet not found"
+        )
+    
+    #new like
+    new_like = Like(tweetId=tweet_id)
+    db.add(new_like)
+    db.commit()
+
+    #count all likes for this tweet
+    total_likes = (
+        db.query(func.count(Like.id))
+            .filter(Like.tweetId == tweet_id)
+            .scalar()
+    )
+
+    return {"likes": total_likes}

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from config.db import get_db
 from validators.tweet_validate import TweetCreate, TweetUpdate
-from controllers.tweet_controller import create_tweet, get_all_tweets, update_tweet, delete_tweet, search_tweets, search_hashtags
+from controllers.tweet_controller import create_tweet, get_all_tweets, update_tweet, delete_tweet, search_tweets, search_hashtags, like_tweet
 from models.user_schema import User
 from middleware.auth import get_current_user
 
@@ -38,3 +38,7 @@ def put_tweet(tweet_id: int, tweet: TweetUpdate, db: Session = Depends(get_db)):
 @tweet_router.delete("/{tweet_id}")
 def remove_tweet(tweet_id: int, db: Session = Depends(get_db)):
     return delete_tweet(db, tweet_id)
+
+@tweet_router.post("/{tweet_id}/like")
+def post_like(tweet_id: int, db: Session = Depends(get_db)):
+    return like_tweet(db, tweet_id)
