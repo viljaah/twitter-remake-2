@@ -22,9 +22,13 @@ const FollowersList = ({ type }) => {
         }
 
         // Determine which endpoint to call based on the type prop
+        // const endpoint = type === 'followers' 
+        //   ? 'https://twitter-remake-backend.onrender.com/api/users/followers'
+        //   : 'https://twitter-remake-backend.onrender.com/api/users/following';
+
         const endpoint = type === 'followers' 
-          ? 'https://twitter-remake-backend.onrender.com/api/users/followers'
-          : 'https://twitter-remake-backend.onrender.com/api/users/following';
+          ? 'http://localhost:8000/api/users/followers'
+          : 'http://localhost:8000/api/users/following';
 
         const response = await fetch(endpoint, {
           headers: {
