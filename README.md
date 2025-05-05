@@ -47,3 +47,17 @@ Design and architecture choices
 Justification for your implementation decisions
 Discussion of the scalability approaches (like the like batcher)
 Analysis of how these components would perform under different traffic scenarios
+
+---------------------------------------------------------------------
+## regarding load balancer
+after i have read the theory about load balancer, we will go for these features:
+- least conencitons method
+- and Nginx
+
+--- This Docker Compose file:
+1. Pulls the official Nginx image
+2. Maps port 80 on your host to port 80 in the container
+3. Mounts your nginx.conf file to the correct location in the container
+4. Sets up a network for your containers to communicate
+
+after created docker-compose.yaml write in temrinal docker-compose up
