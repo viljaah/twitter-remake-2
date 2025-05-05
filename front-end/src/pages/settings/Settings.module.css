@@ -1,0 +1,122 @@
+.settingsContainer {
+    width: 100%;
+    max-width: 600px;
+    min-height: 100vh;
+    color: #fff;
+    border: 1px solid rgb(47, 51, 54);
+    margin-left: 300px;
+  }
+  
+  .headingSettings {
+    font-size: 20px;
+    font-weight: bold;
+    padding: 15px;
+    margin: 0;
+  }
+  
+  .settingsHeader {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .backButton {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    margin-right: 20px;
+  }
+  
+  .listOfSettings {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--border-color);
+  }
+  
+  .settingBtn {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    color: #fff;
+    text-align: left;
+    padding: 15px;
+    font-size: 15px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .displayContent {
+    padding: 15px;
+  }
+  
+  .displayDescription {
+    color: rgb(110, 118, 125);
+    line-height: 1.5;
+    margin-bottom: 25px;
+  }
+  
+  .settingSection {
+    margin-bottom: 30px;
+  }
+  
+  .sectionTitle {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 15px;
+  }
+  
+  .backgroundOptions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .backgroundOption {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+
+  .backgroundOption:hover {
+    transform: scale(1.02);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+
+  /* had to udjust this because of the dark/dim/light mode */
+  .settingsContainer div.backgroundOption.themeButton span {
+    color: #ffffff !important;
+  }
+  
+  .radioButton {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .radioButtonSelected {
+    width: 12px;
+    height: 12px;
+    background-color: #1da1f2;
+    border-radius: 50%;
+  }
+  
+  @media (max-width: 1250px) {
+    .settingsContainer {
+      margin-left: 170px;
+    }
+  }

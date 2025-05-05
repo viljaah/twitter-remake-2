@@ -1,0 +1,11 @@
+.exploreContainer {
+    margin-left: 300px;
+    width: 600px;
+    border: 1px solid var(--border-color);
+}
+
+@media (max-width: 1250px) {
+    .exploreContainer {
+      margin-left: 170px;
+    }
+  }

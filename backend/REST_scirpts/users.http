@@ -1,0 +1,65 @@
+### Register User
+POST https://twitter-remake-1.onrender.com/api/users/register
+Content-Type: application/json
+
+{
+  "username": "modetest",
+  "email": "modetest@gmail.com",
+  "password": "modetest",
+  "display_name": "modetest",
+  "bio": "hei, modesta here and i also love stratos, test"
+}
+
+
+### Login User - IMPORTANT: For OAuth2 you need to use form data, not JSON
+POST https://twitter-remake-backend.onrender.com/api/users/login
+Content-Type: application/x-www-form-urlencoded
+
+username=vilja&password=stratos
+
+### Get current user (protected route)
+GET http://localhost:8000/api/users/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwiZXhwIjoxNzQzNTk5Nzg4fQ.vht5HUmY5nAlRt2kXPp7z7MgSk-5b1s1NiNP5GWY3yY
+
+### Logout
+POST http://localhost:8000/api/users/logout
+Content-Type: application/json
+
+{}
+
+### Get All user profiles (protected route)
+GET http://localhost:8000/api/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwiZXhwIjoxNzQzNTk5Nzg4fQ.vht5HUmY5nAlRt2kXPp7z7MgSk-5b1s1NiNP5GWY3yY
+
+### Get all tweets from specific user
+GET http://localhost:8000/api/users/2/tweets
+
+
+### Search for a user by username (public route)
+GET http://localhost:8000/api/users/search?q=vilja
+
+### Delete a user (protected route)
+DELETE http://localhost:8000/api/users/1
+Authorization: Bearer YOUR_TOKEN_HERE
+
+### Get users the current user is following (protected route)
+GET http://localhost:8000/api/users/following
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwiZXhwIjoxNzQzOTQ1Mzg1fQ.ERSCGNrykWQL5QXfT5bfaZKItVlVtV4PPbmy66euTfc
+
+### Follow a user (protected route)
+POST http://localhost:8000/api/users/follow/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwiZXhwIjoxNzQzOTQ1Mzg1fQ.ERSCGNrykWQL5QXfT5bfaZKItVlVtV4PPbmy66euTfc
+Content-Type: application/json
+
+{}
+
+### Unfollow a user (protected route)
+DELETE http://localhost:8000/api/users/follow/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwiZXhwIjoxNzQzOTQ1Mzg1fQ.ERSCGNrykWQL5QXfT5bfaZKItVlVtV4PPbmy66euTfc
+
+### Get followers count for a user
+GET http://localhost:8000/api/users/3/followers/count
+
+### Get following count for a user
+GET http://localhost:8000/api/users/3/following/count
+

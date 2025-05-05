@@ -1,0 +1,210 @@
+.mainContent {
+  flex: 1;
+  max-width: 600px;
+  border: 1px solid var(--border-color);
+  margin-left: 300px;
+}
+
+/* styling for the header section*/
+.header {
+  display: flex;
+  align-items: flex;
+  padding: 10px 15px;
+  top: 0;
+  z-index: 5;
+}
+
+.backButton {
+  color: #fff;
+  margin-right: 20px;
+  top: 10px;
+  position: relative;
+}
+
+.headerInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.headerName {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.postCount {
+  color: #536471;
+  font-size: 0.9rem;
+}
+
+/* 2. Cover Photo section*/
+.coverPhoto {
+  width: 100%;
+  height: 200px;
+  background-color: #cfd9de; /* Light gray as in the image */
+}
+
+/* 3. Profile Information Section */
+.profileDetails {
+  margin-top: 80px;
+  padding-bottom: 15px;
+}
+
+.profileInfo {
+  padding: 0 15px;
+  position: relative;
+}
+
+.profilePictureContainer {
+  position: absolute;
+  top: -60px;
+  left: 15px;
+  border: 4px solid var(--profile-border);
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.profilePicture {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+}
+
+.editProfileContainer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 10px;
+}
+
+.nameContainer {
+  margin-top: 60px;
+}
+
+.displayName {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.username {
+  color: #536471;
+  margin: 5px 0;
+}
+
+.joinDateContainer {
+  display: flex;
+  align-items: center;
+  color: #536471;
+  margin: 10px 0;
+}
+
+.calendarIcon {
+  margin-right: 5px;
+}
+
+/*styling for following, and follwers*/
+.statsContainer {
+  display: flex;
+  gap: 20px;
+  margin: 15px 0;
+}
+
+.followBtn {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+}
+
+.followBtn:hover {
+  color: #1da1f2;
+}
+
+/* 4. Navigation Tabs */
+.navTabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  margin-top: 15px;
+}
+
+.tab {
+  padding: 15px;
+  flex: 1;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.tab:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+}
+
+.activeTab {
+  color: #1da1f2;
+}
+
+.activeTab::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 4px;
+  background-color: #1da1f2;
+  border-radius: 2px;
+}
+
+/* Tweet section */
+.tweetsSection {
+  width: 100%;
+}
+
+.noTweets {
+  padding: 30px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+/* Follow button styling */
+.followButton {
+  border: 1px solid var(--border-color);
+  background-color: var(--post-button);
+  color: black;
+  font-weight: bold;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  cursor: pointer;
+}
+
+.unfollowButton {
+  background-color: transparent;
+  color: var(--danger-color);
+  border: 1px solid var(--danger-color);
+}
+
+.unfollowButton:hover {
+  background-color: rgba(244, 33, 46, 0.1);
+}
+
+/* Loading and error states */
+.loadingState, 
+.errorState {
+  padding: 30px;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.errorState {
+  color: var(--danger-color);
+}
+
+@media (max-width: 1250px) {
+  .mainContent {
+    margin-left: 170px;
+  }
+}

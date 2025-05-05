@@ -1,0 +1,108 @@
+.postContainer {
+  display: flex;
+  align-items: flex-start;
+  padding: 25px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.profileImg {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 12px;
+}
+
+.postContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+.textArea {
+  width: 100%;
+  border: none;
+  resize: none;
+  font-size: 20px;
+  outline: none;
+  margin-bottom: 8px;
+  margin-top: 12px;
+}
+
+/* had to udjust this because of the dark/dim/light mode */
+.postContainer .textArea {
+  background: transparent !important; 
+}
+
+.actionsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.icons {
+  display: flex;
+  gap: 20px;
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  fill: #1da1f2;
+}
+
+.icon:hover {
+  fill: #126da5;
+}
+
+.postBtn {
+  margin-left: auto; /* Keep any positioning styles */
+}
+
+@media (max-width: 600px) {
+  .icon:last-child {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .icon:nth-last-child(2) {
+    display: none;
+  }
+}
+
+/* styling for the PostSidebar */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(125, 124, 124, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.postSidebarContent {
+  position: relative; 
+  background-color: var(--popup-post-container);
+  padding: 20px;
+  border-radius: 8px;
+  width: 600px;
+  max-width: 90%;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  color: #fff;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
