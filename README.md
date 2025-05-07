@@ -79,3 +79,35 @@ twitter-remake-2/
 │   └── cache_server.py
 └── docker-compose.yml     # Main Docker Compose file
 This structure keeps your cache implementation separate from your backend code, which aligns with the assignment's requirement that "this whole subsystem should be the kind you could choose to add or remove later."
+
+
+'''
+Sets up a group of backend servers called backend_servers
+Configures them to use the least connections algorithm
+Creates a server that listens on port 80 and forwards requests to those backend servers
+'''
+
+
+Your question about how the load balancer connects to the frontend is a good one. Let me explain:
+
+In your current setup, the load balancer isn't directly connected to your frontend. Here's how the components are currently related:
+
+1. Your frontend (running on localhost:3000) is making API requests directly to your backend (localhost:8000)
+2. Your load balancer (on localhost:80) is routing traffic to your cache server
+3. Your cache server is then making requests to your backend when needed
+
+The CORS errors you're seeing are because your frontend is trying to access your backend directly, but the necessary CORS headers aren't set up.
+
+For a fully integrated setup, you would modify your frontend to make API requests to your load balancer (localhost:80) instead of directly to your backend. The flow would then be:
+
+1. Frontend → Load Balancer → Cache Server → Backend (for first request)
+2. Frontend → Load Balancer → Cache Server (for cached requests)
+
+This way, all your API requests would benefit from caching without having to modify your frontend code much - just change the API base URL.
+
+Your cache implementation is working correctly as designed:
+- It caches GET requests
+- Cached responses expire after 1 minute
+- Everything is containerized with Docker
+
+The connection to your frontend would be a separate enhancement that you could implement once the basic caching functionality is verified.
