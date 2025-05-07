@@ -1,3 +1,4 @@
+'''
 from fastapi import FastAPI, Request, Response
 import requests
 import time
@@ -93,8 +94,6 @@ if __name__ == "__main__":
 
 
 
-
-'''
 These should only cache reads and not writes or deletes. They
 should be written in Python, and can use a like structure the dictionary. The cached
 requests should automatically be removed when more than 1 minute old. Normally, we
@@ -187,3 +186,163 @@ async def root():
     return {"message": "Cache server is running. Try /api/tweets to see cached
 
 '''
+from fastapi import FastAPI, Request, Response
+import requests
+import time
+import uvicorn
+from datetime import datetime
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+# Add CORS middleware
+origins = [
+    "http://localhost:3000",
+    "https://twitter-remake-frontend-1qap.onrender.com",
+    "http://localhost"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Simple dictionary cache with timestamp tracking
+cache = {}
+
+def check_invalidation():
+    """Remove cache entries older than 1 minute"""
+    now = datetime.now()
+    expired_keys = []
+    for endpoint in cache:
+        age = (now - cache[endpoint]['timestamp']).total_seconds()
+        if age > 60:  # 60 seconds = 1 minute
+            expired_keys.append(endpoint)
+    
+    # Remove expired entries
+    for endpoint in expired_keys:
+        del cache[endpoint]
+    
+    print(f"Cache invalidation removed {len(expired_keys)} entries")
+    return len(expired_keys)
+
+async def forward_request(request: Request, endpoint: str):
+    """Forward any type of request to backend with all headers and body"""
+    # Include query parameters in the backend URL
+    query_params = request.query_params
+    backend_url = f"http://backend:8000{endpoint}"
+    
+    if query_params:
+        query_string = "&".join([f"{k}={v}" for k, v in query_params.items()])
+        backend_url = f"{backend_url}?{query_string}"
+    
+    # Get the request method
+    method = request.method
+    
+    # Get the request body if it exists
+    body = await request.body()
+    
+    # Get the request headers
+    headers = dict(request.headers)
+    if "host" in headers:
+        del headers["host"]  # Remove host header as it will be set by requests
+    
+    # Measure request time
+    start_time = time.time()
+    
+    # Make the appropriate request based on the HTTP method
+    try:
+        if method == "GET":
+            response = requests.get(backend_url, headers=headers)
+        elif method == "POST":
+            response = requests.post(backend_url, data=body, headers=headers)
+        elif method == "PUT":
+            response = requests.put(backend_url, data=body, headers=headers)
+        elif method == "DELETE":
+            response = requests.delete(backend_url, headers=headers)
+        elif method == "OPTIONS":
+            response = requests.options(backend_url, headers=headers)
+        else:
+            return Response(content=b"Method not supported", status_code=405)
+        
+        # Log timing
+        elapsed = time.time() - start_time
+        print(f"Backend {method} request: {elapsed:.4f} seconds for {endpoint}")
+        
+        # Return response with original headers (important for CORS)
+        return Response(
+            content=response.content,
+            status_code=response.status_code,
+            headers=dict(response.headers)
+        )
+    except Exception as e:
+        print(f"Error forwarding request: {e}")
+        return Response(
+            content=str(e).encode(),
+            status_code=500
+        )
+
+@app.api_route("/{full_path:path}", methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+async def handle_all_requests(request: Request, full_path: str):
+    """Handle all types of requests, with caching only for GETs"""
+    endpoint = f"/{full_path}"
+    method = request.method
+    
+    # For GET requests, try to use cache
+    if method == "GET":
+        # Create a cache key that includes query parameters
+        cache_key = endpoint
+        if request.query_params:
+            query_string = "&".join([f"{k}={v}" for k, v in request.query_params.items()])
+            cache_key = f"{endpoint}?{query_string}"
+        
+        # Step 1: Run invalidation check
+        check_invalidation()
+        
+        # Step 2: Check if request is cached
+        if cache_key in cache:
+            print(f"Cache HIT: {cache_key}")
+            return cache[cache_key]['data']
+        
+        # Step 3: If not in cache, forward to backend
+        print(f"Cache MISS: {cache_key}")
+        response = await forward_request(request, endpoint)
+        
+        # Only cache successful JSON responses
+        if response.status_code == 200:
+            try:
+                # Try to parse as JSON
+                import json
+                response_data = json.loads(response.body)
+                
+                # Store in cache with timestamp
+                cache[cache_key] = {
+                    'data': response_data,
+                    'timestamp': datetime.now()
+                }
+                
+                return response_data
+            except:
+                # If not JSON, just return the response without caching
+                pass
+        
+        return response
+    
+    # For non-GET requests, just forward to backend (no caching)
+    return await forward_request(request, endpoint)
+   
+               
+
+@app.get("/cache-stats")
+async def get_cache_stats():
+    """Endpoint to monitor cache status"""
+    return {
+        "cache_size": len(cache),
+        "cached_endpoints": list(cache.keys())
+    }
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8001)
