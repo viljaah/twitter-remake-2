@@ -76,4 +76,11 @@ Let me break down the implementation into simpler steps:
    - Create a Dockerfile to package your cache server
    - Set up environment variables for configuration
 
-Would you like me to explain any of these steps in more detail, or would you prefer more specific tutorial recommendations?
+
+
+1. It should cache only read (GET) requests, not writes or deletes
+2. It should invalidate cached items older than 1 minute
+3. It should be written in Python
+4. It should run as a Docker container
+
+

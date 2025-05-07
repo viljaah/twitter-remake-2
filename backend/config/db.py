@@ -1,7 +1,13 @@
+#from sqlalchemy import create_engine
+#from sqlalchemy.orm import declarative_base, sessionmaker
+#import os
+#rom dotenv import load_dotenv
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
-import os
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
+import os
+import sys
 
 load_dotenv()
 # Get database URL from environment variable

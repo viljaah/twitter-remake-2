@@ -16,6 +16,7 @@ app = FastAPI()
 origins = [
     "http://localhost:3000",  # Adjust if running locally
     "https://twitter-remake-frontend-1qap.onrender.com",
+    "http://localhost"
 ]
 # add CORS middleware to allow requests from specified origins
 app.add_middleware(
@@ -35,10 +36,10 @@ app.include_router(tweet_router, prefix="/api")
 async def root():
     return RedirectResponse(url="/docs")
 
-port = int(os.environ.get("PORT", 8000))
-print(f"Starting on port: {port}")
+#port = int(os.environ.get("PORT", 8000))
+#print(f"Starting on port: {port}")
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
+    port = int(os.environ.get("PORT", 8000)) #issues docker is taken the 8000 and not from .env
     print(f"Starting on port: {port}")  # Debug line; remove this in production
     uvicorn.run("app:app", host="0.0.0.0", port=port, reload=False)
