@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from config.db import engine, Base
 from routes.tweet_routes import tweet_router
 from routes.user_routes import userRouter 
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,10 +6,9 @@ import os
 import uvicorn
 from dotenv import load_dotenv
 from fastapi.responses import RedirectResponse
+
 load_dotenv()
 
-# this creates tables if they have not been created yet, need to create the tbales in my db before i can use them
-Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 origins = [

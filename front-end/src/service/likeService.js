@@ -8,6 +8,6 @@ export const addLike = async (tweetId) => {
     if (!res.ok) {
         throw new Error('Failed to like tweet');
     }
-    const { likes } = await res.json();
-    return likes;
+    const { cached } = await res.json();
+    return cached;
 };

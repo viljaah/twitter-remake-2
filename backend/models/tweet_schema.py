@@ -12,6 +12,7 @@ class Tweet(Base):
     content = Column(Text, nullable=False)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    likes = Column(Integer, default=0, nullable=False)
 
     # establishes relationships
     user = relationship("User", back_populates="tweets")

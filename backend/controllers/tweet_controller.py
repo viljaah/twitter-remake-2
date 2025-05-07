@@ -37,19 +37,10 @@ def create_tweet(db: Session, tweet_data: dict) -> Tweet:
 
 # retrive all tweets
 # route GET /tweets
-# def get_all_tweets(db: Session):
-#     """
-#     :return: list of tweet objects
-#     """
-#     # fetch all records from the tweets table
-#     tweets = db.query(Tweet).all()
-#     return tweets
-
 def get_all_tweets(db: Session):
     """
-    Return a list of tweets, each as a dict that includes a 'likes' count.
+    return a list of tweets, with 'likes' count
     """
-    # 1. Query each Tweet + its Like‐count
     rows = (
         db.query(
             Tweet,
@@ -60,7 +51,6 @@ def get_all_tweets(db: Session):
         .all()
     )
 
-    # 2. Build a JSON‐serializable list of dicts
     tweets = []
     for tweet, likes in rows:
         data = tweet.__dict__.copy()
