@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { IoIosMore } from "react-icons/io";
 import { GoHeart } from "react-icons/go";
 import styles from "./TweetItem.module.css";
 import { updateTweet, deleteTweet } from "../../service/tweetService";
+import { addLike } from "../../service/likeService";
 import { useAuth } from "../../contexts/AuthContext";
 import Button from "../../components/ui/Button.jsx";
 
@@ -22,6 +23,8 @@ const TweetItem = ({ tweet, onTweetUpdated, onTweetDeleted }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [isOwnTweet, setIsOwnTweet] = useState(false);
+  const [likes, setLikes] = useState(tweet.likes || 0);
+  // const [likeLoading, setLikeLoading] = useState(false); // do i need this?
 
   // Format date for display
   const formatDate = (dateString) => {
@@ -103,6 +106,16 @@ const TweetItem = ({ tweet, onTweetUpdated, onTweetDeleted }) => {
     setError("");
   };
 
+  const handleLike = async () => {
+    try {
+      // call service, get new total
+      const newCount = await addLike(tweet.id);
+      setLikes(newCount);
+    } catch (err) {
+      console.error("Error liking tweet:", err);
+  }
+}
+
 
   return (
     <div className={styles.tweetCard}>
@@ -180,7 +193,13 @@ const TweetItem = ({ tweet, onTweetUpdated, onTweetDeleted }) => {
         )}
       </div>
       <div className={styles.tweetFooter}>
-        <GoHeart className={styles.heartIcon} />
+        <button
+          onClick={handleLike}
+          className={styles.button}
+        >
+          <GoHeart className={styles.heartIcon} />
+          <span className={styles.likeCount}>{likes}</span>
+        </button>
       </div>
     </div>
   );
