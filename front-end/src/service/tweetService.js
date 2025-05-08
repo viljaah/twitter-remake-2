@@ -4,7 +4,7 @@
  */
 
 // const API_URL = 'https://twitter-remake-backend.onrender.com/api';
-const API_URL = 'http://localhost:8000/api';
+const API_URL = 'http://localhost/api';
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
