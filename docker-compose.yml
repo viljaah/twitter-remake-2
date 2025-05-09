@@ -1,11 +1,4 @@
 services:
-
-  # frontend:
-  #   build:
-  #     context: ./front-end
-  #   ports:
-  #     - "3000:3000"
-
   backend:
     build:
       context: ./backend
@@ -18,6 +11,8 @@ services:
       - .env
     ports:
       - "8000:8000"
+    networks:
+      - app-network
 
   worker:
     build:
@@ -30,8 +25,10 @@ services:
     command: ["python", "worker.py"]
     depends_on:
       - backend
+    networks:
+      - app-network
   
-  # Three cache instances as shown in your diagram
+  # Three cache instances
   cache1:
     build: ./cache
     ports:
@@ -40,6 +37,8 @@ services:
       - BACKEND_URL=http://backend:8000
     depends_on:
       - backend
+    networks:
+      - app-network
   
   cache2:
     build: ./cache
@@ -49,6 +48,8 @@ services:
       - BACKEND_URL=http://backend:8000
     depends_on:
       - backend
+    networks:
+      - app-network
   
   cache3:
     build: ./cache
@@ -58,6 +59,8 @@ services:
       - BACKEND_URL=http://backend:8000
     depends_on:
       - backend
+    networks:
+      - app-network
   
   load_balancer:
     image: nginx:latest
@@ -69,4 +72,9 @@ services:
       - cache1
       - cache2
       - cache3
+    networks:
+      - app-network
 
+networks:
+  app-network:
+    driver: bridge
