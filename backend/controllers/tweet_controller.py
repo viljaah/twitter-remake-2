@@ -5,6 +5,7 @@ from models.tweet_schema import Tweet
 from models.hashtag_schema import Hashtag
 from models.like_schema import Like
 import re
+from cache.db_cache import get_from_cache, save_to_cache
 
 # create a new tweet
 # route POST /tweets
@@ -41,6 +42,15 @@ def get_all_tweets(db: Session):
     """
     return a list of tweets, with 'likes' count
     """
+    # Check cache first
+    cache_key = "all_tweets"
+    cached_result = get_from_cache(cache_key)
+    
+    # If we found it in cache, return it immediately
+    if cached_result is not None:
+        return cached_result
+    
+    # Not in cache, do the database query
     rows = (
         db.query(
             Tweet,
@@ -58,6 +68,9 @@ def get_all_tweets(db: Session):
         data["likes"] = likes
         tweets.append(data)
 
+    # Save to cache for next time
+    save_to_cache(cache_key, tweets)
+    
     return tweets
 
 # search for tweets that have the query string in their content
