@@ -1,0 +1,4 @@
+GET logs
+GET does_not_exist
+POST api/tweets/1/like
+GET logs

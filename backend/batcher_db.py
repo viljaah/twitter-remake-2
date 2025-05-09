@@ -5,7 +5,6 @@ from sqlalchemy import create_engine, Column, Integer, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# Load environment variables
 load_dotenv()
 
 # Cache database URL (SQLite file in backend/)
