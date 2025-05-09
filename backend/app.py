@@ -1,3 +1,9 @@
+# import deploy so the SQLAlchemy event hook is registered
+import deploy
+import logging
+# debugging aid
+logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
+
 from fastapi import FastAPI
 from routes.tweet_routes import tweet_router
 from routes.user_routes import userRouter 
@@ -7,8 +13,6 @@ import uvicorn
 from dotenv import load_dotenv
 from fastapi.responses import RedirectResponse
 from middleware.apiLogger import log_requests, read_request_log, read_db_count
-# import deploy so the SQLAlchemy event hook is registered
-import deploy
 
 load_dotenv()
 
@@ -44,7 +48,7 @@ async def root():
 @app.get("/logs")
 async def get_logs():
     """
-    Returns all API calls seen since startup as
+    returns all API calls seen since startup as
        { 
        "requests": [ ["GET","like/123"], ["POST","tweet"] ... ]
        "db_access_count": 42

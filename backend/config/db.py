@@ -1,13 +1,8 @@
-#from sqlalchemy import create_engine
-#from sqlalchemy.orm import declarative_base, sessionmaker
-#import os
-#rom dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from deploy import SessionLocal
 from dotenv import load_dotenv
 import os
-import sys
 
 load_dotenv()
 # Get database URL from environment variable
@@ -22,8 +17,6 @@ try:
 except Exception as e:
     print("Error connecting to the database:", e)
 
-# creates a factory for making database sessions
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # this is what the schemas will inherit from
 Base = declarative_base()
 
