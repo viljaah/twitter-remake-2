@@ -24,7 +24,6 @@ const TweetItem = ({ tweet, onTweetUpdated, onTweetDeleted }) => {
   const [error, setError] = useState("");
   const [isOwnTweet, setIsOwnTweet] = useState(false);
   const [likes, setLikes] = useState(tweet.likes || 0);
-  // const [likeLoading, setLikeLoading] = useState(false); // do i need this?
 
   // Format date for display
   const formatDate = (dateString) => {
