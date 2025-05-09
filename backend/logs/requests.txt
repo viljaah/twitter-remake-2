@@ -2,3 +2,14 @@ GET logs
 GET does_not_exist
 POST api/tweets/1/like
 GET logs
+GET api/users/me
+GET api/users/me
+POST api/users/login
+GET api/users
+GET api/users
+GET api/users/
+GET api/users/
+GET api/tweets
+GET api/users/following
+GET api/tweets
+GET api/users/following
