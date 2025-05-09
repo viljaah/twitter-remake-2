@@ -6,10 +6,16 @@ import os
 import uvicorn
 from dotenv import load_dotenv
 from fastapi.responses import RedirectResponse
+from middleware.apiLogger import log_requests, read_request_log, read_db_count
+# import deploy so the SQLAlchemy event hook is registered
+import deploy
 
 load_dotenv()
 
 app = FastAPI()
+
+# register the HTTP‐logging middleware
+app.middleware("http")(log_requests)
 
 origins = [
     "http://localhost:3000",  # Adjust if running locally
@@ -33,6 +39,21 @@ app.include_router(tweet_router, prefix="/api")
 @app.get("/")
 async def root():
     return RedirectResponse(url="/docs")
+
+# /logs endpoint, in app.py because it is a route
+@app.get("/logs")
+async def get_logs():
+    """
+    Returns all API calls seen since startup as
+       { 
+       "requests": [ ["GET","like/123"], ["POST","tweet"] ... ]
+       "db_access_count": 42
+       }
+    """
+    return {
+        "requests": read_request_log(),
+        "db_access_count": read_db_count()
+    }
 
 #port = int(os.environ.get("PORT", 8000))
 #print(f"Starting on port: {port}")
