@@ -2,6 +2,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from models.user_schema import User
 from models.follow_schema import Follow
+from cache.db_cache import get_from_cache, save_to_cache
 
 # @desc Get users that a specific user is following
 # @route GET /users/following
@@ -14,6 +15,17 @@ def get_user_following(user_id: int, db: Session):
     :return: List of users the specified user is following with follow status
     :raises HTTPException: If user not found
     """
+  # Use user ID in the cache key
+    cache_key = f"user_following_{user_id}"
+    cached_result = get_from_cache(cache_key)
+    
+    if cached_result is not None:
+        print(f"DB Cache HIT: {cache_key}")
+        return cached_result
+    
+    print(f"DB Cache MISS: {cache_key}")
+    # Not in cache, get from database
+    
     # check if the user exists
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
@@ -40,10 +52,15 @@ def get_user_following(user_id: int, db: Session):
             "is_following": True  # always true since these are users being followed
         })
     
-    return {
+    result = {
         "count": len(following_list),
         "following": following_list
     }
+    
+    # Save to cache
+    save_to_cache(cache_key, result)
+    
+    return result
 
 # Get users following a specific user
 def get_user_followers(user_id: int, db: Session):
@@ -55,6 +72,16 @@ def get_user_followers(user_id: int, db: Session):
     :return: List of users following the specified user
     :raises HTTPException: If user not found
     """
+    cache_key = f"user_followers_{user_id}"
+    cached_result = get_from_cache(cache_key)
+    
+    if cached_result is not None:
+        print(f"DB Cache HIT: {cache_key}")
+        return cached_result
+    
+    print(f"DB Cache MISS: {cache_key}")
+    # Not in cache, get from database
+    
     # Check if user exists
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
@@ -88,10 +115,15 @@ def get_user_followers(user_id: int, db: Session):
             "is_following": is_following
         })
     
-    return {
+    result = {
         "count": len(followers_list),
         "followers": followers_list
     }
+    
+    # Save to cache
+    save_to_cache(cache_key, result)
+    
+    return result
 
 # @desc Follow a user
 # @route POST /users/follow/{user_id}
@@ -195,16 +227,35 @@ def get_followers_count(user_id: int, db: Session):
     :param db: SQLAlchemy database session
     :return: Count of followers
     """
+    cache_key = f"followers_count_{user_id}"
+    cached_result = get_from_cache(cache_key)
+    
+    if cached_result is not None:
+        print(f"DB Cache HIT: {cache_key}")
+        return cached_result
+    
+    print(f"DB Cache MISS: {cache_key}")
+    # Not in cache, count from database
     count = db.query(Follow).filter(Follow.following_id == user_id).count()
-    return {"count": count}
+    result = {"count": count}
+    
+    # Save to cache
+    save_to_cache(cache_key, result)
+    
+    return result
 
 def get_following_count(user_id: int, db: Session):
-    """
-    Count the number of users a specific user is following
+    cache_key = f"followers_count_{user_id}"
+    cached_result = get_from_cache(cache_key)
     
-    :param user_id: ID of the user whose following to count
-    :param db: SQLAlchemy database session
-    :return: Count of following
-    """
-    count = db.query(Follow).filter(Follow.follower_id == user_id).count()
-    return {"count": count}
+    if cached_result is not None:
+        print(f"DB Cache HIT: {cache_key}")
+        return cached_result
+    
+    print(f"DB Cache MISS: {cache_key}")
+    count = db.query(Follow).filter(Follow.following_id == user_id).count()
+    result = {"count": count}
+    
+    save_to_cache(cache_key, result)
+    
+    return result

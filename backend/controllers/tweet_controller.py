@@ -80,19 +80,34 @@ def search_tweets(db: Session, query: str):
     :param query: the search string
     :return: a list of tweets that match the search query, if no tweets match it returns an empty list
     """
+    cache_key = f"search_tweets_{query}"
+    cached_result = get_from_cache(cache_key)
+    
+    if cached_result is not None:
+        print(f"DB Cache HIT: {cache_key}")
+        return cached_result
+    
+    print(f"DB Cache MISS: {cache_key}")
     # .ilike() performs a case-insensitive match, it will find tweets regardless of letter case
     # %{query}% allows matching the query string anywhere within the tweet content
     tweets = db.query(Tweet).filter(Tweet.content.ilike(f"%{query}%")).all()
+
+    save_to_cache(cache_key, tweets)
+
     return tweets
 
 # search for tweets with hashtags that have the query string in their name
 # route GET /tweets/hashtag/search?={query}
 def search_hashtags(db: Session, query: str):
-    """
-    :param query: the search string
-    :return: a list of tweets that have a hashtag matching the query
-    uses a join between tweet and hashtag
-    """
+    cache_key = f"search_hashtags_{query}"
+    cached_result = get_from_cache(cache_key)
+    
+    if cached_result is not None:
+        print(f"DB Cache HIT: {cache_key}")
+        return cached_result
+    
+    print(f"DB Cache MISS: {cache_key}")
+    # Not in cache, search in database
     tweets = (
         db.query(Tweet)
         # join the tweets table with the associated hashtags
@@ -100,6 +115,10 @@ def search_hashtags(db: Session, query: str):
         .filter(Hashtag.name.ilike(f"%{query}%"))
         .all()
     )
+    
+    # Save to cache
+    save_to_cache(cache_key, tweets)
+    
     return tweets
 
 # edit one tweet
