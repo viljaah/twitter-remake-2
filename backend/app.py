@@ -55,9 +55,6 @@ async def get_logs():
         "db_access_count": read_db_count()
     }
 
-#port = int(os.environ.get("PORT", 8000))
-#print(f"Starting on port: {port}")
-
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000)) #issues docker is taken the 8000 and not from .env
     print(f"Starting on port: {port}")  # Debug line; remove this in production

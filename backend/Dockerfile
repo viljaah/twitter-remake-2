@@ -1,5 +1,9 @@
 FROM python:3.11-slim
 
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 COPY requirements.txt .
@@ -12,8 +16,6 @@ RUN mkdir -p logs && \
     touch logs/requests.txt logs/dbcount.txt
 
 EXPOSE 8000
-
-CMD ["python", "deploy.py"]
 
 # create SQLite file and tables on startup
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

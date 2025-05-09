@@ -12,8 +12,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./backend:/app
-      - ./logs/requests.txt:/app/logs/requests.txt
-      - ./logs/dbcount.txt:/app/logs/dbcount.txt
+      - ./backend/logs/requests.txt:/app/logs/requests.txt
+      - ./backend/logs/dbcount.txt:/app/logs/dbcount.txt
     env_file:
       - .env
     ports:
