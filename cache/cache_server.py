@@ -6,20 +6,21 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-# Add CORS middleware
+# need to have cors middelware because of cors issues when trying to access backedn through caches first
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Fixed: Now a list
+    allow_origins=["http://localhost:3000"],  # frontend server adress
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Simple in-memory cache
+# chose in-memory cache storage: {url_string: {"data": response_data, "timestamp": datetime_object}} instead of redis or another mehtods for caching
 cache = {}
 
 def check_invalidation():
-    """Remove cache entries older than 1 minute"""
+    """Remove cache entries older than 1 minute
+    and returns the number og entries removed """
     now = datetime.now()
     expired_keys = []
     
@@ -28,7 +29,7 @@ def check_invalidation():
         if now - cache_time > timedelta(minutes=1):
             expired_keys.append(url)
     
-    # Remove expired entries
+    # this is where removal of expired entities happen
     for url in expired_keys:
         del cache[url]
         
@@ -36,6 +37,12 @@ def check_invalidation():
     
     return len(expired_keys)
 
+"""
+    Main request handler that implements caching logic:
+    1. For GET requests: Check cache first, forward to backend if not cached
+    2. For non-GET requests: Forward directly to backend (no caching)
+    3. Cache successful GET responses for future requests
+"""
 @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
 async def handle_request(request: Request, path: str):
     method = request.method
@@ -45,9 +52,8 @@ async def handle_request(request: Request, path: str):
     if request.query_params:
         backend_url += "?" + str(request.url.query)
     
-    # For GET requests, check cache
+    # Only attempt to use cache for GET requests (reads, not writes)
     if method == "GET":
-        # First run invalidation check on entire cache
         check_invalidation()
         
         cache_key = str(request.url)
@@ -57,18 +63,20 @@ async def handle_request(request: Request, path: str):
             print(f"Cache HIT: {cache_key}")
             return cache[cache_key]["data"]
         
+        #else print this: 
         print(f"Cache MISS: {cache_key}")
     
-    # Forward the request to backend
+    # Forward the request to backend API server
     try:
-        # Get headers and body
+        # Prepare headers (remove 'host' to avoid conflicts)
         headers = dict(request.headers)
         if "host" in headers:
             del headers["host"]
         
+        # Get request body for non-GET requests
         body = await request.body()
         
-        # Send to backend
+        # Forward request to backend server
         async with httpx.AsyncClient() as client:
             response = await client.request(
                 method=method,
@@ -90,21 +98,21 @@ async def handle_request(request: Request, path: str):
                 # Not JSON, don't cache
                 pass
         
-        # Return the response from backend
+         # Return the backend response as-is for non-cached responses
         return Response(
             content=response.content,
             status_code=response.status_code,
             headers=dict(response.headers)
         )
     except Exception as e:
-        # Fixed error response format
+        # Return a formatted error response if request fails
         return Response(
             content=json.dumps({"error": str(e)}),
             status_code=500,
             media_type="application/json"
         )
 
-
+# The caches should run as Docker containers: 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)

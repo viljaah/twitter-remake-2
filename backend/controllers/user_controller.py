@@ -7,6 +7,7 @@ print("bcrypt module location:", bcrypt.__file__)
 print("Available attributes:", dir(bcrypt))
 from datetime import timedelta
 from middleware.auth import create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
+from cache.db_cache import get_from_cache, save_to_cache
 
 # @desc create new account
 # route POST /api/users/register
@@ -95,10 +96,20 @@ def logout_user():
 # @desc retrieve all accouts
 # route GET /users
 def getAll_users(db: Session):
-    #query all users from the db
+    # Check cache first
+    cache_key = "all_users"
+    cached_result = get_from_cache(cache_key)
+    
+    # If found in cache, return it
+    if cached_result is not None:
+        print(f"DB Cache HIT: {cache_key}")
+        return cached_result
+    
+    print(f"DB Cache MISS: {cache_key}")
+    # Not in cache, query the database
     users = db.query(User).all()
 
-    #create a list with user data
+    # Process the results
     user_list = []
     for user in users:
         user_list.append({
@@ -108,11 +119,16 @@ def getAll_users(db: Session):
             "display_name": user.display_name,
             "bio": user.bio
         })
-    return {
+    
+    result = {
         "count": len(user_list),
         "users": user_list
     }
-
+    
+    # Save to cache
+    save_to_cache(cache_key, result)
+    
+    return result
 
 # @desc retrieve specific accout
 # route GET /users/{user_id}
@@ -125,6 +141,16 @@ def getAll_users(db: Session):
     :raises HTTPException: If user not found
     """
 def get_user_by_id(user_id: int, db: Session):
+    # Use user ID in the cache key
+    cache_key = f"user_{user_id}"
+    cached_result = get_from_cache(cache_key)
+    
+    if cached_result is not None:
+        print(f"DB Cache HIT: {cache_key}")
+        return cached_result
+    
+    print(f"DB Cache MISS: {cache_key}")
+    # Not in cache, get from database
     user = db.query(User).filter(User.id == user_id).first()
 
     if not user:
@@ -132,7 +158,8 @@ def get_user_by_id(user_id: int, db: Session):
             status_code = status.HTTP_404_NOT_FOUND,
             detail = f"User with ID {user_id} not found"
         )
-    return {
+    
+    result = {
         "user": {
             "id": user.id,
             "username": user.username,
@@ -143,6 +170,11 @@ def get_user_by_id(user_id: int, db: Session):
             "updated_at": user.updated_at
         }
     }
+    
+    # Save to cache
+    save_to_cache(cache_key, result)
+    
+    return result
 
 # @desc delete your own account
 # route DELETE /users/{user_id}
@@ -180,6 +212,16 @@ def delete_user_by_id(user_id: int, db: Session, current_user):
 # @desc search for account
 # route GET /users/search?q={query}
 def search_user_by_username(username: str, db: Session):
+    # Use username in the cache key
+    cache_key = f"user_search_{username}"
+    cached_result = get_from_cache(cache_key)
+    
+    if cached_result is not None:
+        print(f"DB Cache HIT: {cache_key}")
+        return cached_result
+    
+    print(f"DB Cache MISS: {cache_key}")
+    # Not in cache, search in database
     user = db.query(User).filter(User.username == username).first()
     
     if not user:
@@ -188,7 +230,7 @@ def search_user_by_username(username: str, db: Session):
             detail=f"User with username {username} not found"
         )
     
-    return {
+    result = {
         "user": {
             "id": user.id,
             "username": user.username,
@@ -199,16 +241,32 @@ def search_user_by_username(username: str, db: Session):
             "updated_at": user.updated_at,
             "following": 0, 
             "followers": 0,
-            "joinDate": user.created_at.strftime("%B %Y")  # Format: "April 2025"
+            "joinDate": user.created_at.strftime("%B %Y")
         }
     }
+    
+    # Save to cache
+    save_to_cache(cache_key, result)
+    
+    return result
 
 # @desc retrieve all tweets made by the user with the given user_id
 # route GET /users/{userId}/tweets
 def get_tweets_by_user(user_id: int, db: Session):
-    """
-    :param user_id: the id of the user whose tweets to fetch
-    :return: a dictionary containing a list of tweets
-    """
+    # Use user ID in the cache key
+    cache_key = f"user_tweets_{user_id}"
+    cached_result = get_from_cache(cache_key)
+    
+    if cached_result is not None:
+        print(f"DB Cache HIT: {cache_key}")
+        return cached_result
+    
+    print(f"DB Cache MISS: {cache_key}")
+    # Not in cache, get from database
     tweets = db.query(Tweet).filter(Tweet.user_id == user_id).all()
-    return {"tweets": tweets}
+    result = {"tweets": tweets}
+    
+    # Save to cache
+    save_to_cache(cache_key, result)
+    
+    return result
