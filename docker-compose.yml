@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./backend:/app
+      - ./cache:/app/cache  
       - ./backend/logs/requests.txt:/app/logs/requests.txt
       - ./backend/logs/dbcount.txt:/app/logs/dbcount.txt
     env_file:

@@ -1,25 +1,32 @@
-# cache/simple_cache.py
-import time
+# This is a super simple cache - just a Python dictionary with timestamps
+from datetime import datetime, timedelta
 
-# Simple dictionary to store cached results
+# Our cache is just a dictionary (similar to a JavaScript object)
 cache = {}
 
 def get_from_cache(key):
-    """Get value from cache if it exists and is not expired"""
+    """Try to get something from cache"""
+    # If the key exists in our cache
     if key in cache:
-        # Check if cache entry is expired (older than 1 minute)
-        if time.time() - cache[key]['timestamp'] < 60:
-            print(f"Cache hit: {key}")
-            return cache[key]['data']
+        entry = cache[key]
+        now = datetime.now()
+        
+        # Check if it's less than 1 minute old
+        if now - entry["timestamp"] < timedelta(minutes=1):
+            print(f"DB Cache: Found {key} in cache!")
+            return entry["data"]
         else:
-            # Remove expired entry
+            # It's too old, remove it
+            print(f"DB Cache: {key} expired, removing")
             del cache[key]
+    
+    # Not in cache or expired
     return None
 
 def save_to_cache(key, data):
-    """Save value to cache with current timestamp"""
+    """Save something to the cache"""
     cache[key] = {
-        'data': data,
-        'timestamp': time.time()
+        "data": data,
+        "timestamp": datetime.now()
     }
-    print(f"Saved to cache: {key}")
+    print(f"DB Cache: Saved {key} to cache")
