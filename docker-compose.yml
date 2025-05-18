@@ -15,6 +15,22 @@ services:
     networks:
       - app-network
 
+  front-end:
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+    volumes:
+      - ./front-end:/app
+    env_file:
+      - .env
+    command: sh -c "npm install @rollup/rollup-linux-x64-gnu && npm run build && npx serve -s dist -l 3000"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
   worker:
     build:
       context: ./backend

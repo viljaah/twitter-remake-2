@@ -19,7 +19,7 @@ Functionality: Cache GET requests for 1 minute
 Implementation: Python containers using dictionaries
 Architecture: Dockerized containers between web server and API
 
-2. Like Batcher- VILJA
+2. Like Batcher -VILJA
 - Like tweets -> The like button does not have to track which users has liked. Idempotence be damned! It can simply be a “make the database number one larger each time I click it”-
 button.  
 
@@ -34,7 +34,7 @@ Purpose: Similar to the API caches but between API and database
 Functionality: Cache read operations with 1-minute timeout
 Implementation: Python
 
-4. Logger
+4. Logger -VILJA
 Purpose: Track API usage
 Functionality: Log all API calls and database accesses
 Endpoint: Accessible at /logs
