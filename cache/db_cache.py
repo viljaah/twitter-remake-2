@@ -1,4 +1,3 @@
-# This is a super simple cache - just a Python dictionary with timestamps
 from datetime import datetime, timedelta
 
 # Our cache is just a dictionary (similar to a JavaScript object)
@@ -16,7 +15,7 @@ def get_from_cache(key):
             print(f"DB Cache: Found {key} in cache!")
             return entry["data"]
         else:
-            # It's too old, remove it
+            # It's too old, delete it
             print(f"DB Cache: {key} expired, removing")
             del cache[key]
     
