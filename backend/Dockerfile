@@ -13,5 +13,4 @@ RUN mkdir -p logs && \
 
 EXPOSE 8000
 
-# create SQLite file and tables on startup
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

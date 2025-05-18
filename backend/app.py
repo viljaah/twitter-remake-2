@@ -47,13 +47,6 @@ async def root():
 # /logs endpoint, in app.py because it is a route
 @app.get("/logs")
 async def get_logs():
-    """
-    returns all API calls seen since startup as
-       { 
-       "requests": [ ["GET","like/123"], ["POST","tweet"] ... ]
-       "db_access_count": 42
-       }
-    """
     return {
         "requests": read_request_log(),
         "db_access_count": read_db_count()
